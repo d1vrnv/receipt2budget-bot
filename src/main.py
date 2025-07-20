@@ -185,7 +185,7 @@ async def handle_confirmation(
                     amount=-total_amount,
                 )
                 actual.commit()
-                logger.info(f"Added transaction to Actual: {actual_transaction.model_dump_json()}")
+                logger.info(f"Added transaction to Actual: {actual_transaction.id=}")
 
             success_text = (
                 f"✅ Transaction Added Successfully!\n\n"

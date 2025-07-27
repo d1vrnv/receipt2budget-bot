@@ -3,23 +3,32 @@
 A Telegram bot that processes receipt photos using OCR and LLM technology to automatically extract store information and
 transaction amounts, then creates transactions in Actual Budget.
 
+##  Screenshots
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="assets/photo_2025-07-27%2018.34.04.jpeg" alt="Main UI" width="200"/>
+  <img src="assets/photo_2025-07-27%2018.34.06.jpeg" alt="LLM Response" width="200"/>
+</div>
+
 ## Features
 
 - **Receipt OCR Processing**: Extract text from receipt images using DocTR
 - **AI Analysis**: Uses Llama 3.2 LLM to parse store names and total amounts
 - **Actual Budget Integration**: Automatically creates transactions in your Actual Budget
+- **User Authentication**: Restricts bot access to authorized users only
 - **Confirmation Flow**: Interactive confirmation before adding transactions
 - **Multi-format Support**: Accepts photos and image documents in various formats
 
 ## How It Works
 
-1. **Image Reception**: Bot receives photo or image document from user
-2. **OCR Processing**: DocTR extracts text from the receipt image
-3. **AI Analysis**: Llama 3.2 model parses the text to identify:
+1. **Authentication Check**: Bot verifies if the user is authorized to use the bot
+2. **Image Reception**: Bot receives a photo or image document from the user
+3. **OCR Processing**: DocTR extracts text from the receipt image
+4. **AI Analysis**: Llama 3.2 model parses the text to identify:
     - Store/merchant name
     - Total transaction amount
-4. **User Confirmation**: Bot displays parsed information and asks for confirmation
-5. **Transaction Creation**: If confirmed, creates transaction in Actual Budget with:
+5. **User Confirmation**: Bot displays parsed information and asks for confirmation
+6. **Transaction Creation**: If confirmed, creates transaction in Actual Budget with:
     - Current date
     - Configured account
     - Store name as notes
@@ -69,12 +78,23 @@ Create a `.env` file in the project root with the following variables:
 | Variable      | Description                             | Example                                         |
 |---------------|-----------------------------------------|-------------------------------------------------|
 | `BOT_TOKEN`   | Your Telegram bot token from @BotFather | `1234567890:ABCdef...`                          |
+| `ALLOWED_USER_IDS`   | Comma-separated list of authorized Telegram user IDs | `111111111,222222222`                          |
 | `MODEL_PATH`  | Path to the Llama model file            | `/app/models/Llama-3.2-3b-instruct-q4_k_m.gguf` |
 | `AB_URL`      | Your Actual Budget server URL           | `http://localhost:5006`                         |
 | `AB_PASSWORD` | Password for your Actual Budget server  | `your_password`                                 |
 | `AB_FILE`     | Name of your Actual Budget file         | `My Budget`                                     |
 | `AB_ACCOUNT`  | Account name in Actual Budget           | `Cash`                                          |
 | `AB_PAYEE`    | Default payee name                      | `Starting Balance`                              |
+
+
+### Getting Your Telegram User ID
+To find your Telegram user ID for the configuration: `ALLOWED_USER_IDS`
+1. Start a conversation with your bot
+2. Send the command `/myid`
+3. The bot will respond with your user ID
+4. Add this ID to the environment variable `ALLOWED_USER_IDS`
+
+**Note**: Only users whose IDs are listed in will be able to use the bot. All other users will receive an "unauthorized" message. `ALLOWED_USER_IDS`
 
 ## Usage
 

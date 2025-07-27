@@ -3,9 +3,11 @@ import datetime
 import logging
 import os
 import sys
+from typing import Callable, Dict, Any, Awaitable, List
 from typing import Literal
 
 from actual import Actual, create_transaction
+from aiogram import BaseMiddleware
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import (
@@ -14,7 +16,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
-from pydantic import SecretStr
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings
 
 from src.receipt_reader import extract_text_from_receipt, ask_llm
@@ -41,11 +43,21 @@ SUPPORTED_IMAGE_EXTENSIONS = {
 class Settings(BaseSettings):
     model_path: str = "../models/Llama-3.2-3b-instruct-q4_k_m.gguf"
     bot_token: SecretStr
+    allowed_user_ids: str | List[int]
     ab_url: str
     ab_password: SecretStr
     ab_file: str
     ab_account: str
     ab_payee: str
+
+    @field_validator("allowed_user_ids", mode="before")
+    @classmethod
+    def parse_user_ids(cls, v):
+        if isinstance(v, str):
+            if not v.strip():
+                return []
+            return [int(x.strip()) for x in v.split(",") if x.strip()]
+        return v
 
 
 class ConfirmationCallback(CallbackData, prefix="confirm"):
@@ -58,6 +70,40 @@ app_settings = Settings()
 
 dp = Dispatcher()
 bot = Bot(token=app_settings.bot_token.get_secret_value())
+
+
+class UserAuthMiddleware(BaseMiddleware):
+    async def __call__(
+        self,
+        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+        event: Message,
+        data: Dict[str, Any],
+    ) -> Any:
+        """Check if the user is authorized"""
+
+        # Skip auth check for /myid command
+        if hasattr(event, "text") and event.text == "/myid":
+            return await handler(event, data)
+
+        user_id = event.from_user.id
+        if user_id not in app_settings.allowed_user_ids:
+            if hasattr(event, "answer"):
+                await event.answer(
+                    "❌ You are not authorized to use this bot."
+                )
+            elif hasattr(event, "message") and hasattr(
+                event.message, "answer"
+            ):
+                await event.message.answer(
+                    "❌ You are not authorized to use this bot."
+                )
+            return None
+
+        return await handler(event, data)
+
+
+dp.message.middleware(UserAuthMiddleware())
+dp.callback_query.middleware(UserAuthMiddleware())
 
 
 async def process_receipt_file(
@@ -242,6 +288,11 @@ async def handle_document(message: Message):
         await process_receipt_file(message, document.file_id, file_name)
     else:
         await message.answer("❌ Please send image files only.\n")
+
+
+@dp.message(F.text == "/myid")
+async def get_user_id(message: Message):
+    await message.answer(f"Your user ID is: {message.from_user.id}")
 
 
 @dp.message()

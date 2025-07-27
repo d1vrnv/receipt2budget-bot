@@ -85,13 +85,17 @@ async def process_receipt_file(
             "📷 Receipt image downloaded. Running OCR..."
         )
 
-        receipt_text = await asyncio.to_thread(extract_text_from_receipt, destination)
+        receipt_text = await asyncio.to_thread(
+            extract_text_from_receipt, destination
+        )
 
         await processing_msg.edit_text(
             "🤖 Text extracted. Analyzing with LLM..."
         )
 
-        result = await asyncio.to_thread(ask_llm, receipt_text, app_settings.model_path)
+        result = await asyncio.to_thread(
+            ask_llm, receipt_text, app_settings.model_path
+        )
 
         store = result.get("store", "Unknown")
         pay_total = result.get("total", None)
@@ -184,7 +188,9 @@ async def handle_confirmation(
                     amount=-total_amount,
                 )
                 actual.commit()
-                logger.info(f"Added transaction to Actual: {actual_transaction.id=}")
+                logger.info(
+                    f"Added transaction to Actual: {actual_transaction.id=}"
+                )
 
             success_text = (
                 f"✅ Transaction Added Successfully!\n\n"

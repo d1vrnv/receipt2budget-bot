@@ -67,6 +67,10 @@ Return ONLY valid JSON in this exact format:
             logger.error(f"Failed to parse JSON: {completion}")
             logger.error(f"JSON error: {json_error}")
             return {"store": "Unknown", "total": "£0.00"}
+        finally:
+            if llm is not None:
+                logger.info("Freeing LLM model memory...")
+                del llm
 
     except Exception as e:
         logger.error(f"LLM processing failed: {e}")

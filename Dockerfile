@@ -28,7 +28,7 @@ COPY src src
 
 # Download GGUF model
 RUN mkdir -p models && \
-    wget https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
+    wget --progress=dot:giga https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
          -O models/Llama-3.2-3b-instruct-q4_k_m.gguf
 
 

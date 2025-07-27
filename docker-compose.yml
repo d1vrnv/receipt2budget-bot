@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  telegram-receipt-bot:
+  receipt2budget-bot:
     deploy:
       resources:
         limits:
@@ -9,11 +9,5 @@ services:
           memory: 4G
     build:
       context: .
-    container_name: receipt-bot
     restart: unless-stopped
     env_file: ".env"
-#    command: ["uv", "run", "-m", "src.main"]
-#    command: ["tail", "-f", "/dev/null"]
-#
-#    volumes:
-#      - ./models:/app/models

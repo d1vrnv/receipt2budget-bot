@@ -10,12 +10,21 @@ transaction amounts, then creates transactions in Actual Budget.
   <img src="assets/photo_2025-07-27%2018.34.06.jpeg" alt="LLM Response" width="200"/>
 </div>
 
+## Dependencies
+
+This project uses the following key libraries:
+
+- **[actualpy](https://github.com/bvanelli/actualpy)** : Python library for integrating with Actual Budget
+- **[DocTR](https://github.com/mindee/doctr)**: OCR processing for extracting text from receipt images
+- **[Llama 3.2](https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF)**: LLM for parsing store names and amounts from the receipt text
+- **[aiogram](https://github.com/aiogram/aiogram)**: Telegram Bot API framework
+
 ## Features
 
 - **Receipt OCR Processing**: Extract text from receipt images using DocTR
 - **AI Analysis**: Uses Llama 3.2 LLM to parse store names and total amounts
 - **Actual Budget Integration**: Automatically creates transactions in your Actual Budget
-- **User Authentication**: Restricts bot access to authorized users only
+- **User Access Control**: Restricts bot usage to whitelisted Telegram user IDs
 - **Confirmation Flow**: Interactive confirmation before adding transactions
 - **Multi-format Support**: Accepts photos and image documents in various formats
 

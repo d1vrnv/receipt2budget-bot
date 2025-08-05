@@ -116,14 +116,14 @@ async def process_receipt_file(
         file_info = await bot.get_file(file_id)
         file_path = file_info.file_path
 
-        os.makedirs("../downloaded_images", exist_ok=True)
+        os.makedirs("downloaded_images", exist_ok=True)
 
         file_extension = (
             os.path.splitext(filename)[1].lower() if filename else ".jpg"
         )
         if file_extension not in SUPPORTED_IMAGE_EXTENSIONS:
             await message.answer("❌ Please send image files only.\n")
-        destination = f"../downloaded_images/{file_id}{file_extension}"
+        destination = f"downloaded_images/{file_id}{file_extension}"
 
         await bot.download_file(file_path, destination)
 
